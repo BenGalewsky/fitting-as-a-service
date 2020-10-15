@@ -65,7 +65,8 @@ print(w)
 
 tasks = {}
 for i in range(NUM_RUNS):
-    name = patches['patches'][i]['metadata']['name']
+    patch = patches['patches'][i]
+    name = patch['metadata']['name']
     task_id = fxc.run(w, patch['metadata'], patch['patch'], endpoint_id=pyhf_endpoint, function_id=infer_func)
     tasks[name] = {"id": task_id, "result": None}
 
