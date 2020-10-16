@@ -1,14 +1,14 @@
 import sys
 from time import sleep
 import json
-NUM_RUNS = 10
+NUM_RUNS = 70
 import requests
 from funcx.sdk.client import FuncXClient
 
-pyhf_endpoint = 'ae7f555f-07ec-4261-b5f6-d0930ce545a5'
+pyhf_endpoint = 'a727e996-7836-4bec-9fa2-44ebf7ca5302'
 
 fxc = FuncXClient()
-
+fxc.max_requests = 200
 
 def prepare_workspace(data):
     import pyhf
@@ -58,7 +58,7 @@ while not w:
         w = fxc.get_result(prepare_task)
     except Exception as e:
         print("prepare ", e)
-        sleep(30)
+        sleep(15)
 
 print("--------------------")
 print(w)
@@ -84,7 +84,7 @@ while count_complete(tasks.values()) < NUM_RUNS:
                 tasks[task]['result'] = result
             except Exception as e:
                 print(e)
-                sleep(30)
+                sleep(15)
 
 print("--------------------")
 print(tasks.values())
