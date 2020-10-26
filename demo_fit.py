@@ -4,6 +4,7 @@ import json
 NUM_RUNS = 70
 import requests
 from funcx.sdk.client import FuncXClient
+from pyhf.contrib.utils import download
 
 pyhf_endpoint = 'a727e996-7836-4bec-9fa2-44ebf7ca5302'
 
@@ -33,20 +34,23 @@ def infer_hypotest(w, metadata, doc):
     d = w.data(m)
     return {
         'metadata': metadata,
-        'CLs_obs': float(pyhf.infer.hypotest(1.0, d, m, qtilde=True)),
+        'CLs_obs': float(pyhf.infer.hypotest(1.0, d, m, test_stat="qtilde")),
         'Fit-Time': time.time() - tick
     }
 
 
 infer_func = fxc.register_function(infer_hypotest)
 
-data = requests.get('https://gist.githubusercontent.com/lukasheinrich/75b80a2f8bc49e365bfb96e767c8a726/raw/a0946bc7590c76fec2b70de2f6f46208c0545c8d/BkgOnly.json').json()
+# locally get pyhf pallet for analysis
+download("https://doi.org/10.17182/hepdata.90607.v3/r3", "1Lbb-pallet")
+with open("1Lbb-pallet/BkgOnly.json") as bkgonly_json:
+    bkgonly_workspace = json.load(bkgonly_json)
 
-prepare_task = fxc.run(data, endpoint_id=pyhf_endpoint, function_id=prepare_func)
+prepare_task = fxc.run(bkgonly_workspace, endpoint_id=pyhf_endpoint, function_id=prepare_func)
 
 # While this cooks, let's read in the patch set
 patches = None
-with open('patchset.json') as f:
+with open("1Lbb-pallet/patchset.json") as f:
     patches = json.load(f)
 patch = patches['patches'][0]
 name = patch['metadata']['name']
